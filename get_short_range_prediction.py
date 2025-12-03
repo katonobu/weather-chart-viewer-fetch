@@ -22,7 +22,13 @@ if __name__ == "__main__":
     # textが抽出されていたら
     if tanki_obj["result"] and 0 < len(tanki_obj["pages"]) and "texts" in tanki_obj["pages"][0]:
         # textから発表日時を取得
-        title_str = tanki_obj["pages"][0]["texts"].split("\n")[0]
+        for idx in range(3):
+            title_str = tanki_obj["pages"][0]["texts"].split("\n")[idx]
+            if "短期予報解説資料" in title_str:
+                break
+        if "短期予報解説資料" not in title_str:
+            print("Failed to extract title from 短期予報解説資料.")
+            exit(1)
         md_text += f'# {title_str.split()[0].replace("1","")}\n'
         reported_at_str = title_str.split()[1]
         md_text += f'## {reported_at_str}\n'
