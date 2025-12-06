@@ -33,5 +33,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: long-range-output_${{ env.FETCH_DATE_TIME }}
-          path: data/**/*
+          path: scraper/data/**/*
           retention-days: 15
