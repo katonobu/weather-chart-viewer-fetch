@@ -1,8 +1,13 @@
 certifi==2025.6.15
 charset-normalizer==3.4.2
 idna==3.10
+iniconfig==2.3.0
 Markdown==3.8
+packaging==25.0
 pillow==11.2.1
+pluggy==1.6.0
+Pygments==2.19.2
 PyMuPDF==1.26.1
+pytest==9.0.1
 requests==2.32.4
 urllib3==2.4.0

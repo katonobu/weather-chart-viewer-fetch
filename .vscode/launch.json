@@ -1,0 +1,26 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+
+    {
+      "name": "Run short range prediction",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "scraper.jobs.get_short_range_prediction",  // ← ファイルではなくモジュール指定
+      "console": "integratedTerminal",
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}"  // ルートを検索パスに追加
+      }
+    },
+    {
+      "name": "Run long range prediction",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "scraper.jobs.get_long_range_prediction",  // ← ファイルではなくモジュール指定
+      "console": "integratedTerminal",
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}"  // ルートを検索パスに追加
+      }
+    }
+  ]
+}
