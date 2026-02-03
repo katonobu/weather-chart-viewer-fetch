@@ -1,6 +1,7 @@
 class Storage:
-    def __init__(self, serializer, title: str, released_at_j: str, released_at: str, based_on_utc: str):
+    def __init__(self, serializer, dir_name:str, title: str, released_at_j: str, released_at: str, based_on_utc: str):
         self.serializer = serializer
+        self.dir_name = dir_name
         self.title = title
         self.released_at_j = released_at_j
         self.released_at = released_at
@@ -43,6 +44,7 @@ class Storage:
 
         # 軽量版 metadata.json
         metadata = {
+            "id": self.dir_name,
             "title": self.title,
             "released_at_j": self.released_at_j,
             "released_at": self.released_at,
@@ -64,6 +66,7 @@ class Storage:
 
         # 詳細版 metadata_detail.json
         metadata_detail = {
+            "id": self.dir_name,
             "title": self.title,
             "released_at_j": self.released_at_j,
             "released_at": self.released_at,

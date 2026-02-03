@@ -36,8 +36,9 @@ def build_storage(published_at_jst:datetime, doc_title:str, Serialize:Serialize)
     measure_publish_diff_min = 40
     measured_at_jst = published_at_jst - timedelta(hours = measure_publish_diff_hour, minutes=measure_publish_diff_min)
     measured_at_utc = measured_at_jst.astimezone(timezone.utc)
-    serializer = Serialize(published_at_jst.strftime('%Y%m%d_%H%M'))
-    storage = Storage(serializer, "短期予報解説資料", doc_title, published_at_jst.strftime("%Y-%m-%d %H:%M:%S"), measured_at_utc.strftime("%Y-%m-%d %H:%M:%S"))
+    dir_name = published_at_jst.strftime('%Y%m%d_%H%M')
+    serializer = Serialize(dir_name)
+    storage = Storage(serializer, dir_name, "短期予報解説資料", doc_title, published_at_jst.strftime("%Y-%m-%d %H:%M:%S"), measured_at_utc.strftime("%Y-%m-%d %H:%M:%S"))
     return (storage, measured_at_utc)
 
 
