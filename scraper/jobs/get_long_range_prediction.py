@@ -32,8 +32,9 @@ def build_storage(published_at_jst:datetime, doc_title:str, Serialize:Serialize)
     doc_title: 週間天気予報解資料記載の短期予報解説発表年月日時刻
     Serialize: 保存先メディアに応じたSerializeクラスのコンストラクタ
     """
-    serializer = Serialize(published_at_jst.strftime('%Y%m%d_%H%M'))
-    storage = Storage(serializer, "週間天気予報解説資料", doc_title, published_at_jst.strftime("%Y-%m-%d %H:%M:%S"), None)
+    dir_name = published_at_jst.strftime('%Y%m%d_%H%M')
+    serializer = Serialize(dir_name)
+    storage = Storage(serializer, dir_name, "週間天気予報解説資料", doc_title, published_at_jst.strftime("%Y-%m-%d %H:%M:%S"), None)
     return (storage, None)
 
 
