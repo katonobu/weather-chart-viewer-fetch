@@ -29,6 +29,14 @@ jobs:
       - name: Run Python script
         run: python -m scraper.jobs.get_long_range_prediction
 
+      - name: Upload to cloudinary
+        env:
+          CLOUDINARY_CLOUD_NAME: ${{ secrets.CLOUDINARY_CLOUD_NAME }}
+          CLOUDINARY_API_KEY: ${{ secrets.CLOUDINARY_API_KEY }}
+          CLOUDINARY_API_SECRET: ${{ secrets.CLOUDINARY_API_SECRET }}
+        run: |
+          python -m scraper.jobs.upload_to_cloudinary
+
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
