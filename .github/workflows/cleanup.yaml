@@ -1,7 +1,8 @@
 name: cleanup
 on:
+  workflow_dispatch: # 手動実行を許可
   schedule:
-    - cron: '0 0 * * *'  # 毎日など
+    - cron: '0 9 * * *'  # 日本時間 24:00 (UTC 9:00)
 
 jobs:
   cleanup:
