@@ -4,6 +4,10 @@ on:
   schedule:
     - cron: '0 9 * * *'  # 日本時間 24:00 (UTC 9:00)
 
+permissions:
+  actions: write
+  contents: read
+
 jobs:
   cleanup:
     runs-on: ubuntu-latest
