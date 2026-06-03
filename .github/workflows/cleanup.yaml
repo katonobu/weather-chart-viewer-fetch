@@ -1,0 +1,12 @@
+name: cleanup
+on:
+  schedule:
+    - cron: '0 0 * * *'  # 毎日など
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: Mattraks/delete-workflow-runs@v2
+        with:
+          retain_days: 30
