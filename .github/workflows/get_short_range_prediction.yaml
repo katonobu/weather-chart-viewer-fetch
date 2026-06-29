@@ -26,6 +26,7 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
+          pip install boto3
 
       - name: Set timestamp
         run: echo "FETCH_DATE_TIME=$(date +'%Y%m%d-%H%M%S')" >> $GITHUB_ENV
@@ -33,18 +34,37 @@ jobs:
       - name: Run Python script
         run: python -m scraper.jobs.get_short_range_prediction
 
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v6
-        with:
-          role-to-assume: arn:aws:iam::382736933734:role/weatherchart-contents-deploy-role          
-          aws-region: ap-northeast-1
-
-      - name: Upload to S3
-        run: aws s3 cp scraper/data/ s3://frontend-cmn-weatherchart-content/shared/services/weatherchart/ --recursive
-
       - name: Upload artifact
         uses: actions/upload-artifact@v7
         with:
           name: short-range-output_${{ env.FETCH_DATE_TIME }}
           path: scraper/data/**/*
           retention-days: 15
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v6
+        with:
+          role-to-assume: arn:aws:iam::382736933734:role/weatherchart-contents-deploy-role          
+          aws-region: ap-northeast-1
+
+      - name: Upload artifacts to S3
+        run: aws s3 cp scraper/data/ s3://frontend-cmn-weatherchart-content/shared/services/weatherchart/ --recursive
+
+      - name: Generate directory list JSON (Python)
+        env:
+            BUCKET: frontend-cmn-weatherchart-content
+            PREFIX: shared/services/weatherchart/
+        run: |
+            python util/generate_directory_list.py
+
+      - name: Upload directory_list.json
+        run: |
+            aws s3 cp directory_list.json \
+            s3://frontend-cmn-weatherchart-content/shared/services/weatherchart/directory_list.json
+
+      - name: Invalidate CloudFront
+        run: |
+          aws cloudfront create-invalidation \
+            --distribution-id E1JJPY985HNT3W
+            --paths "/shared/services/weatherchart/directory_list.json"
+
