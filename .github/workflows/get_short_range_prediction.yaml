@@ -41,7 +41,7 @@ jobs:
           path: scraper/data/**/*
           retention-days: 15
 
-      - name: Configure AWS credentials
+      - name: Configure AWS credentials for contents update
         uses: aws-actions/configure-aws-credentials@v6
         with:
           role-to-assume: arn:aws:iam::382736933734:role/weatherchart-contents-deploy-role          
@@ -62,9 +62,39 @@ jobs:
             aws s3 cp directory_list.json \
             s3://frontend-cmn-weatherchart-content/shared/services/weatherchart/directory_list.json
 
-#      - name: Invalidate CloudFront
-#        run: |
-#          aws cloudfront create-invalidation \
-#            --distribution-id E1JJPY985HNT3W \
-#            --paths "/shared/services/weatherchart/directory_list.json"
+      - name: Configure AWS credentials for cache invalidate dev
+        uses: aws-actions/configure-aws-credentials@v6
+        with:
+          role-to-assume: arn:aws:iam::357665575661:role/weatherchartInvalidateGitHubRole
+          aws-region: ap-northeast-1
+
+      - name: Invalidate CloudFront dev
+        run: |
+          aws cloudfront create-invalidation \
+            --distribution-id E3KCZCB6BTKPI9 \
+            --paths "/shared/services/weatherchart/directory_list.json"
+
+      - name: Configure AWS credentials for cache invalidate dev
+        uses: aws-actions/configure-aws-credentials@v6
+        with:
+          role-to-assume: arn:aws:iam::108241940789:role/weatherchartInvalidateGitHubRole
+          aws-region: ap-northeast-1
+
+      - name: Invalidate CloudFront stg
+        run: |
+          aws cloudfront create-invalidation \
+            --distribution-id E2DYA9BWGLHDV7 \
+            --paths "/shared/services/weatherchart/directory_list.json"
+
+      - name: Configure AWS credentials for cache invalidate stg
+        uses: aws-actions/configure-aws-credentials@v6
+        with:
+          role-to-assume: arn:aws:iam::179698341762:role/weatherchartInvalidateGitHubRole
+          aws-region: ap-northeast-1
+
+      - name: Invalidate CloudFront prd
+        run: |
+          aws cloudfront create-invalidation \
+            --distribution-id E3W1M78O72OP78 \
+            --paths "/shared/services/weatherchart/directory_list.json"
 
