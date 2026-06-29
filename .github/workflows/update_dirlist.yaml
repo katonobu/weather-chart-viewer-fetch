@@ -1,0 +1,40 @@
+name: Update dirlist.json
+
+on:
+    workflow_dispatch: # 手動実行を許可
+
+jobs:
+  run_script:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write    # OIDCトークン発行に必要
+      contents: read
+
+    steps:
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v6
+        with:
+          role-to-assume: arn:aws:iam::382736933734:role/weatherchart-contents-deploy-role          
+          aws-region: ap-northeast-1
+
+      - name: Generate directory list JSON (Python)
+        env:
+            BUCKET: frontend-cmn-weatherchart-content
+            PREFIX: shared/services/weatherchart/
+        run: |
+            python util/generate_directory_list.py
+
+      - name: Upload directory_list.json
+        run: |
+            aws s3 cp directory_list.json \
+            s3://frontend-cmn-weatherchart-content/shared/services/weatherchart/directory_list.json            
