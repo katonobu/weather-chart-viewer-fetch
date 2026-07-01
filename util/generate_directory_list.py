@@ -33,6 +33,9 @@ for item in response.get("CommonPrefixes", []):
     if name:
         dirs.append(name)
 
+# 新しい順に並び替え
+dirs = sorted(dirs, reverse=True)
+
 # JSON出力
 with open("directory_list.json", "w") as f:
     json.dump(dirs, f, indent=2)
