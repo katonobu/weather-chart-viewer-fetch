@@ -1,0 +1,12 @@
+name: Run get_short_range_prediction
+
+on:
+    workflow_dispatch: # 手動実行を許可
+
+jobs:
+  build_and_deploy_app:
+    needs: run_script
+    permissions:
+      id-token: write
+      contents: read    
+    uses: katonobu/weather-chart-viewer-astro-sidey/.github/workflows/build_and_deploy.yaml@main
