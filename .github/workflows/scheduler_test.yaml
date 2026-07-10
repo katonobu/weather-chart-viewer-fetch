@@ -1,6 +1,9 @@
-name: Debug for calling workflow
+name: Debug for calling workflow and scheduler
 
 on:
+  schedule:
+    - cron: '*/5 * * * *'   # 5分毎
+
   workflow_dispatch:
     inputs:
       stage:
