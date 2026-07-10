@@ -1,0 +1,115 @@
+name: Build and Deploy
+
+on:
+  # 手動起動の時はDropDownから選択
+  workflow_dispatch:
+    inputs:
+      stage:
+        description: 'Deploy stage'
+        required: true
+        default: 'dev'
+        type: choice
+        options:
+          - dev
+          - stg
+          - prd
+
+  schedule:
+    - cron: '*/5 * * * *'   # 5分毎
+
+env:
+  SERVICE: weatherchart
+  AWS_REGION: ap-northeast-1
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - name: Set STAGE
+        run: |
+          echo "github.event_name:${{ github.event_name }}"
+          echo "github.event.inputs.stage:${{github.event.inputs.stage}}"
+          if [ "${{ github.event_name }}" = "push" ]; then
+            echo "STAGE=dev" >> $GITHUB_ENV
+          elif [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "STAGE=${{ github.event.inputs.stage }}" >> $GITHUB_ENV
+          elif [ "${{ github.event_name }}" = "schedule" ]; then
+            echo "STAGE=${{ github.event.inputs.stage }}" >> $GITHUB_ENV
+          else
+            echo "----- unexpected pattern -----"
+            echo "STAGE=dev" >> $GITHUB_ENV
+          fi
+
+      - name: Display service,STAGE
+        run: |
+          # 環境変数の表示
+          echo "Service: ${{ env.SERVICE }}"
+          echo "STAGE: ${{ env.STAGE }}"
+
+      - name: Checkout Astro Sidey Web - app
+        uses: actions/checkout@v4
+        with:
+          repository: katonobu/weather-chart-viewer-astro-sidey
+          ref: main
+          path: astro-sidey
+
+      - name: Build Astro
+        run: |
+          npm install
+          NEW_ENTRY_ID=ALL npm run build-${{ env.STAGE }}
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.SERVICE }}-${{ env.STAGE }}
+          path: dist
+          retention-days: 15          
+
+      # =========================
+      # stageごとの設定切替
+      # =========================
+      - name: Set stage config
+        id: stage
+        run: |
+          echo "STAGE=$STAGE" >> $GITHUB_ENV
+
+          if [ "$STAGE" = "prd" ]; then
+            echo "ACCOUNT_ID=179698341762" >> $GITHUB_ENV
+            echo "DIST_ID=E3W1M78O72OP78" >> $GITHUB_ENV
+          elif [ "$STAGE" = "stg" ]; then
+            echo "ACCOUNT_ID=108241940789" >> $GITHUB_ENV
+            echo "DIST_ID=E2DYA9BWGLHDV7" >> $GITHUB_ENV
+          else
+            echo "ACCOUNT_ID=357665575661" >> $GITHUB_ENV
+            echo "DIST_ID=E3KCZCB6BTKPI9" >> $GITHUB_ENV
+          fi
+
+      # =========================
+      # AWS認証（OIDC）
+      # =========================
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: ${{ env.AWS_REGION }}
+          role-to-assume: arn:aws:iam::${{ env.ACCOUNT_ID }}:role/${{ env.SERVICE }}CodeGitHubRole
+
+      # =========================
+      # S3 deploy
+      # =========================
+      - name: Deploy to S3
+        run: |
+          aws s3 cp dist s3://frontend-${{ env.STAGE }}-${{ env.SERVICE }}-site/ --recursive
+
+      # =========================
+      # CloudFront invalidate
+      # =========================
+      - name: Invalidate CloudFront
+        run: |
+          aws cloudfront create-invalidation \
+            --distribution-id ${{ env.DIST_ID }} \
+            --paths "/*" "/recent/*" "/archive/*" "/view/*" "/details/*"
