@@ -1,7 +1,17 @@
 name: Debug for calling workflow
 
 on:
-    workflow_dispatch: # 手動実行を許可
+  workflow_dispatch:
+    inputs:
+      stage:
+        description: 'Deploy stage'
+        required: true
+        default: 'prd'
+        type: choice
+        options:
+          - dev
+          - stg
+          - prd    
 
 jobs:
   build_and_deploy_app:
@@ -10,4 +20,4 @@ jobs:
       contents: read    
     uses: katonobu/weather-chart-viewer-astro-sidey/.github/workflows/build_and_deploy.yaml@main
     with:
-      stage: prd
+      stage: ${{ github.event.inputs.stage }}      
