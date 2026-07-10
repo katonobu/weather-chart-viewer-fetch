@@ -1,7 +1,7 @@
-name: Build and Deploy astro sidey
+name: Build and Deploy astro sidey (develop-branch)
 
 on:
-  # 手動起動の時はDropDownから選択
+  # このyamlの手動ビルド/デプロイは develop ブランチなのでprdは選べない。
   workflow_dispatch:
     inputs:
       stage:
@@ -12,7 +12,6 @@ on:
         options:
           - dev
           - stg
-          - prd
 
 env:
   SERVICE: weatherchart
@@ -52,7 +51,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: katonobu/weather-chart-viewer-astro-sidey
-          ref: main
+          ref: develop
           path: astro-sidey
 
       - name: Build Astro
