@@ -1,4 +1,4 @@
-name: Run get_short_range_prediction
+name: Debug for calling workflow
 
 on:
     workflow_dispatch: # 手動実行を許可
