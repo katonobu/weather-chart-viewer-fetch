@@ -99,5 +99,5 @@ jobs:
             --paths "/shared/services/weatherchart/directory_list.json"
 
   build_and_deploy_app:
-    b_and_d:
-      uses: katonobu/weather-chart-viewer-astro-sidey/.github/workflows/build_and_deploy.yaml@main
+    needs: run_script
+    uses: katonobu/weather-chart-viewer-astro-sidey/.github/workflows/build_and_deploy.yaml@main
