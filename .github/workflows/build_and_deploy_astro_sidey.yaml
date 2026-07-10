@@ -15,7 +15,7 @@ on:
           - prd
 
   schedule:
-    - cron: '*/5 * * * *'   # 5分毎
+    - cron: '0 */2 * * *'   # 2時間毎
 
 env:
   SERVICE: weatherchart
