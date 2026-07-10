@@ -98,3 +98,6 @@ jobs:
             --distribution-id E3W1M78O72OP78 \
             --paths "/shared/services/weatherchart/directory_list.json"
 
+  build_and_deploy_app:
+    b_and_d:
+      uses: katonobu/weather-chart-viewer-astro-sidey/.github/workflows/build_and_deploy.yaml@main
