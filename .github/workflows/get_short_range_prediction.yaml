@@ -100,4 +100,7 @@ jobs:
 
   build_and_deploy_app:
     needs: run_script
+    permissions:
+      id-token: write
+      contents: read    
     uses: katonobu/weather-chart-viewer-astro-sidey/.github/workflows/build_and_deploy.yaml@main
