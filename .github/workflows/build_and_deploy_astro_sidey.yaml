@@ -1,4 +1,4 @@
-name: Build and Deploy
+name: Build and Deploy astro sidey
 
 on:
   # 手動起動の時はDropDownから選択
@@ -13,9 +13,6 @@ on:
           - dev
           - stg
           - prd
-
-  schedule:
-    - cron: '0 */2 * * *'   # 2時間毎
 
 env:
   SERVICE: weatherchart
