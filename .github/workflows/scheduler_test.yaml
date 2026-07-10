@@ -1,0 +1,23 @@
+name: Debug for calling workflow and scheduler
+
+on:
+  schedule:
+    - cron: '*/5 * * * *'   # 5分毎
+    
+  workflow_dispatch:
+    inputs:
+      stage:
+        description: 'Deploy stage'
+        required: true
+        default: 'prd'
+        type: choice
+        options:
+          - dev
+          - stg
+          - prd    
+
+jobs:
+  call-build-and-deploy:
+    uses: katonobu/weather-chart-viewer-astro-sidey/.github/workflows/build_and_deploy.yaml@main
+    with:
+      stage: ${{ github.event_name == 'schedule' && 'prd' || github.event.inputs.stage }}
