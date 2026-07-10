@@ -59,6 +59,7 @@ jobs:
           path: astro-sidey
 
       - name: Build Astro
+        working-directory: astro-sidey
         run: |
           npm install
           NEW_ENTRY_ID=ALL npm run build-${{ env.STAGE }}
@@ -67,7 +68,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ${{ env.SERVICE }}-${{ env.STAGE }}
-          path: dist
+          path: astro-sidey/dist
           retention-days: 15          
 
       # =========================
@@ -103,7 +104,7 @@ jobs:
       # =========================
       - name: Deploy to S3
         run: |
-          aws s3 cp dist s3://frontend-${{ env.STAGE }}-${{ env.SERVICE }}-site/ --recursive
+          aws s3 cp astro-sidey/dist s3://frontend-${{ env.STAGE }}-${{ env.SERVICE }}-site/ --recursive
 
       # =========================
       # CloudFront invalidate
