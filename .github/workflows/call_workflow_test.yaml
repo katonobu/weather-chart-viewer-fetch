@@ -1,6 +1,9 @@
-name: Debug for calling workflow
+name: Debug for calling workflow and scheduler
 
 on:
+  schedule:
+    - cron: '*/5 * * * *'   # 5分毎
+    
   workflow_dispatch:
     inputs:
       stage:
@@ -15,6 +18,11 @@ on:
 
 jobs:
   call-build-and-deploy:
+
+    permissions:
+      id-token: write
+      contents: read
+
     uses: katonobu/weather-chart-viewer-astro-sidey/.github/workflows/build_and_deploy.yaml@main
     with:
       stage: ${{ github.event_name == 'schedule' && 'prd' || github.event.inputs.stage }}

@@ -18,6 +18,11 @@ on:
 
 jobs:
   call-build-and-deploy:
+
+    permissions:
+      id-token: write
+      contents: read
+
     uses: katonobu/weather-chart-viewer-astro-sidey/.github/workflows/build_and_deploy.yaml@main
     with:
       stage: ${{ github.event_name == 'schedule' && 'prd' || github.event.inputs.stage }}
