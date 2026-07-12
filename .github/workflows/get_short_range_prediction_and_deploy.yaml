@@ -132,7 +132,7 @@ jobs:
           elif [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
             echo "STAGE=${{ github.event.inputs.stage }}" >> $GITHUB_ENV
           elif [ "${{ github.event_name }}" = "schedule" ]; then
-            echo "STAGE=${{ github.event.inputs.stage }}" >> $GITHUB_ENV
+            echo "STAGE=prd >> $GITHUB_ENV
           else
             echo "----- unexpected pattern -----"
             echo "STAGE=dev" >> $GITHUB_ENV
