@@ -2,6 +2,7 @@ import os
 import json
 import hashlib
 from PIL import Image
+import xml.etree.ElementTree as ET
 
 class Serialize:
     def serialize(self, content, type: dict, file_name: str) -> dict:
@@ -22,6 +23,17 @@ class LocalSerialize(Serialize):
         self.base_dir = os.path.join(os.path.dirname(__file__), "..", "data", base_name)
         os.makedirs(self.base_dir, exist_ok=True)
 
+    def _get_svg_size(self, file_path):
+        tree = ET.parse(file_path)
+        root = tree.getroot()
+        
+        view_box = root.get('viewBox') # "0 0 100 100" の形式
+        if view_box:
+            _, _, width, height = view_box.split()
+
+        return width, height 
+
+
     def serialize(self, content, type: dict, file_name: str) -> dict:
         input_type = type.get("input")
         output_type = type.get("output")
@@ -32,25 +44,33 @@ class LocalSerialize(Serialize):
 
         file_path = os.path.join(self.base_dir, file_name)
         os.makedirs(os.path.dirname(file_path), exist_ok=True)
+        width = None
+        height = None
 
         # 保存処理
         if (input_type, output_type) == ("text", "image/svg+xml"):
             with open(file_path, "w", encoding="utf-8") as f:
                 f.write(content)
+                width, height = self._get_svg_size(file_path)
 
         elif (input_type, output_type) == ("binary", "image/png"):
             with open(file_path, "wb") as f:
                 f.write(content)
+                width, height = content.size
 
         elif (input_type, output_type) == ("binary", "image/jpeg"):
+            width, height = content.size
             with open(file_path, "wb") as f:
                 f.write(content)
+                width, height = content.size
 
         elif (input_type, output_type) == ("pillow", "image/png"):
             content.save(file_path, format="PNG")
+            width, height = content.size
 
         elif (input_type, output_type) == ("pillow", "image/jpeg"):
             content.save(file_path, format="JPEG")
+            width, height = content.size
 
         elif (input_type, output_type) == ("dict", "application/json"):
             with open(file_path, "w", encoding="utf-8") as f:
@@ -59,8 +79,7 @@ class LocalSerialize(Serialize):
         # ファイル属性計算
         size = os.path.getsize(file_path)
         checksum_md5 = self._calc_md5(file_path)
-
-        return {"size": size, "checksum_md5": checksum_md5, "output": output_type}
+        return {"width": width, "height": height, "size": size, "checksum_md5": checksum_md5, "output": output_type}
 
     def _calc_md5(self, file_path: str) -> str:
         md5 = hashlib.md5()
