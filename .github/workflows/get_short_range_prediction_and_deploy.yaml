@@ -1,5 +1,6 @@
 name: Run get_short_range_prediction_and_deploy
 
+
 on:
   schedule:
     - cron: '0 19 * * *' # 日本時間 4:00 (UTC 19:00)
